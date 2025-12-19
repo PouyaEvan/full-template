@@ -7,7 +7,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
-	"github.com/testcontainers/testcontainers-go/modules/redis"
+	tcredis "github.com/testcontainers/testcontainers-go/modules/redis"
 )
 
 func TestRedisIntegration(t *testing.T) {
@@ -18,7 +18,7 @@ func TestRedisIntegration(t *testing.T) {
 	ctx := context.Background()
 
 	// Start Redis Container
-	redisContainer, err := redis.Run(ctx, "redis:7-alpine")
+	redisContainer, err := tcredis.Run(ctx, "redis:7-alpine")
 	if err != nil {
 		t.Fatalf("failed to start container: %s", err)
 	}
@@ -36,10 +36,14 @@ func TestRedisIntegration(t *testing.T) {
 		t.Fatalf("failed to get connection string: %s", err)
 	}
 
+	// Parse connection string to get address
+	opts, err := redis.ParseURL(endpoint)
+	if err != nil {
+		t.Fatalf("failed to parse connection string: %s", err)
+	}
+
 	// Connect to Redis
-	rdb := redis.NewClient(&redis.Options{
-		Addr: endpoint,
-	})
+	rdb := redis.NewClient(opts)
 	defer rdb.Close()
 
 	// Test Set/Get
