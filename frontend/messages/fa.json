@@ -1,0 +1,89 @@
+{
+  "common": {
+    "welcome": "خوش آمدید",
+    "login": "ورود",
+    "logout": "خروج",
+    "register": "ثبت نام",
+    "email": "ایمیل",
+    "password": "رمز عبور",
+    "phone": "شماره تلفن",
+    "submit": "ارسال",
+    "cancel": "لغو",
+    "save": "ذخیره",
+    "delete": "حذف",
+    "edit": "ویرایش",
+    "loading": "در حال بارگذاری...",
+    "success": "موفقیت",
+    "error": "خطا",
+    "settings": "تنظیمات",
+    "dashboard": "داشبورد",
+    "profile": "پروفایل"
+  },
+  "auth": {
+    "title": "ورود",
+    "subtitle": "اطلاعات حساب کاربری خود را وارد کنید",
+    "otp": {
+      "title": "کد تأیید را وارد کنید",
+      "description": "کد تأیید به شماره تلفن شما ارسال شد",
+      "resend": "ارسال مجدد کد",
+      "sent": "کد با موفقیت ارسال شد"
+    },
+    "twoFactor": {
+      "title": "احراز هویت دو عاملی",
+      "setup": "راه‌اندازی 2FA",
+      "enable": "فعال‌سازی 2FA",
+      "verify": "تأیید 2FA",
+      "enterCode": "کد احراز هویت خود را وارد کنید",
+      "scanQR": "این کد QR را با اپلیکیشن احراز هویت خود اسکن کنید",
+      "backupCodes": "کدهای پشتیبان",
+      "backupCodesDescription": "این کدها را در جای امنی ذخیره کنید. در صورت گم شدن تلفن، می‌توانید از آن‌ها استفاده کنید."
+    }
+  },
+  "dashboard": {
+    "title": "داشبورد",
+    "welcome": "خوش آمدید",
+    "overview": "نمای کلی",
+    "recentActivity": "فعالیت‌های اخیر",
+    "quickActions": "اقدامات سریع"
+  },
+  "payments": {
+    "title": "پرداخت‌ها",
+    "amount": "مبلغ",
+    "description": "توضیحات",
+    "status": "وضعیت",
+    "pending": "در انتظار",
+    "completed": "تکمیل شده",
+    "failed": "ناموفق",
+    "payNow": "پرداخت"
+  },
+  "files": {
+    "title": "فایل‌ها",
+    "upload": "آپلود",
+    "download": "دانلود",
+    "delete": "حذف",
+    "name": "نام",
+    "size": "حجم",
+    "type": "نوع",
+    "uploadedAt": "تاریخ آپلود",
+    "dragDropHint": "فایل‌ها را اینجا رها کنید یا برای انتخاب کلیک کنید"
+  },
+  "errors": {
+    "invalidRequest": "درخواست نامعتبر",
+    "unauthorized": "دسترسی غیرمجاز",
+    "forbidden": "دسترسی ممنوع",
+    "notFound": "منبع یافت نشد",
+    "internal": "خطای داخلی سرور",
+    "invalidCredentials": "اعتبارنامه نامعتبر",
+    "otpExpired": "کد OTP منقضی شده یا یافت نشد",
+    "invalidOtp": "کد OTP نامعتبر",
+    "userNotFound": "کاربر یافت نشد",
+    "invalidToken": "توکن نامعتبر یا منقضی شده"
+  },
+  "validation": {
+    "required": "این فیلد الزامی است",
+    "email": "لطفاً یک آدرس ایمیل معتبر وارد کنید",
+    "phone": "لطفاً یک شماره تلفن معتبر وارد کنید",
+    "minLength": "باید حداقل {min} کاراکتر باشد",
+    "maxLength": "باید حداکثر {max} کاراکتر باشد"
+  }
+}

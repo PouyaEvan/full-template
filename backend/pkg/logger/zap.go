@@ -20,5 +20,12 @@ func InitLogger() {
 	)
 
 	Log = zap.New(core, zap.AddCaller())
-	defer Log.Sync()
+}
+
+// Sync flushes any buffered log entries. Should be called before program exit.
+func Sync() error {
+	if Log != nil {
+		return Log.Sync()
+	}
+	return nil
 }

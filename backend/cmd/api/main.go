@@ -18,14 +18,14 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/youruser/yourproject/internal/adapter/handler/http"
+	httphandler "github.com/youruser/yourproject/internal/adapter/handler/http"
 	"github.com/youruser/yourproject/internal/adapter/handler/http/middleware"
-	"github.com/youruser/yourproject/internal/adapter/repository/postgres"
-	"github.com/youruser/yourproject/internal/adapter/storage/s3"
-	"github.com/youruser/yourproject/internal/adapter/payment/zarinpal"
-	"github.com/youruser/yourproject/internal/adapter/payment/vandar"
 	"github.com/youruser/yourproject/internal/adapter/payment/cardtocard"
+	"github.com/youruser/yourproject/internal/adapter/payment/vandar"
+	"github.com/youruser/yourproject/internal/adapter/payment/zarinpal"
+	"github.com/youruser/yourproject/internal/adapter/repository/postgres"
 	"github.com/youruser/yourproject/internal/adapter/sms/senator"
+	"github.com/youruser/yourproject/internal/adapter/storage/s3"
 	"github.com/youruser/yourproject/pkg/logger"
 	"github.com/youruser/yourproject/pkg/telemetry"
 	"github.com/redis/go-redis/v9"
@@ -78,8 +78,8 @@ func main() {
 	smsAdapter := senator.NewSenatorAdapter()
 
 	// Handlers
-	authHandler := http.NewAuthHandler(smsAdapter, rdb, userRepo)
-	wsHandler := http.NewWebSocketHandler()
+	authHandler := httphandler.NewAuthHandler(smsAdapter, rdb, userRepo)
+	wsHandler := httphandler.NewWebSocketHandler()
 	go wsHandler.Run()
 
 	// 5. Initialize Fiber App
@@ -112,7 +112,7 @@ func main() {
 	})
 
 	// WebSocket Route
-	app.Use("/ws", http.WebSocketMiddleware())
+	app.Use("/ws", httphandler.WebSocketMiddleware())
 	app.Get("/ws", websocket.New(wsHandler.HandleWebSocket))
 
 	// Test WebSocket Broadcast
@@ -274,3 +274,33 @@ func main() {
 
 		return c.JSON(fiber.Map{"transaction_id": txID, "status": "pending_approval"})
 	})
+
+	// 8. Graceful Shutdown
+	go func() {
+		if err := app.Listen(":8080"); err != nil {
+			logger.Log.Fatal("Failed to start server", zap.Error(err))
+		}
+	}()
+
+	// Listen for shutdown signals
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	logger.Log.Info("Shutting down server...")
+
+	// Give the server a deadline for graceful shutdown
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := app.ShutdownWithContext(ctx); err != nil {
+		logger.Log.Fatal("Server forced to shutdown", zap.Error(err))
+	}
+
+	// Close Redis connection
+	if err := rdb.Close(); err != nil {
+		logger.Log.Error("Error closing Redis connection", zap.Error(err))
+	}
+
+	logger.Log.Info("Server exited gracefully")
+}

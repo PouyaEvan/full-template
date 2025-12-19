@@ -126,22 +126,22 @@
 
 [x] Add Socket.io client on Frontend. (Implemented using native WebSockets to match Fiber)
 
-[ ] Advanced Security
+[x] Advanced Security
 
-[ ] Implement full RBAC with Casbin or custom middleware (Roles & Permissions tables).
+[x] Implement full RBAC with Casbin or custom middleware (Roles & Permissions tables).
 
-[ ] Add 2FA (TOTP) support (Google Authenticator).
+[x] Add 2FA (TOTP) support (Google Authenticator).
 
-[ ] Internationalization (i18n)
+[x] Internationalization (i18n)
 
-[ ] Backend: Add support for localized error messages.
+[x] Backend: Add support for localized error messages.
 
-[ ] Frontend: Implement next-intl for multi-language support (EN/FA).
+[x] Frontend: Implement next-intl for multi-language support (EN/FA).
 
 [ ] Mobile Application
 
 [ ] Create a React Native (Expo) boilerplate sharing types/logic with the web frontend.
 
-[ ] Kubernetes
+[x] Kubernetes
 
-[ ] Create Helm Charts for deploying the stack to K8s.
+[x] Create Helm Charts for deploying the stack to K8s.
