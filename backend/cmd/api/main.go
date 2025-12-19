@@ -16,9 +16,11 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/youruser/yourproject/internal/adapter/handler/http"
 	"github.com/youruser/yourproject/internal/adapter/handler/http/middleware"
+	"github.com/youruser/yourproject/internal/adapter/repository/postgres"
 	"github.com/youruser/yourproject/internal/adapter/storage/s3"
 	"github.com/youruser/yourproject/internal/adapter/payment/zarinpal"
 	"github.com/youruser/yourproject/internal/adapter/payment/vandar"
@@ -51,6 +53,16 @@ func main() {
 		Addr: os.Getenv("REDIS_ADDR"),
 	})
 
+	// Postgres
+	dbPool, err := pgxpool.New(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		logger.Log.Fatal("Unable to connect to database", zap.Error(err))
+	}
+	defer dbPool.Close()
+
+	// Repositories
+	userRepo := postgres.NewUserRepository(dbPool)
+
 	// 4. Initialize Adapters
 	s3Adapter, err := s3.NewS3Adapter()
 	if err != nil {
@@ -66,7 +78,7 @@ func main() {
 	smsAdapter := senator.NewSenatorAdapter()
 
 	// Handlers
-	authHandler := http.NewAuthHandler(smsAdapter, rdb)
+	authHandler := http.NewAuthHandler(smsAdapter, rdb, userRepo)
 	wsHandler := http.NewWebSocketHandler()
 	go wsHandler.Run()
 
@@ -121,6 +133,11 @@ func main() {
 	auth.Post("/otp/send", authHandler.SendOTP)
 	auth.Post("/otp/verify", authHandler.VerifyOTP)
 	auth.Get("/google/callback", authHandler.GoogleCallback)
+
+	// 2FA Routes
+	auth.Post("/2fa/setup", middleware.Protected(), authHandler.Setup2FA)
+	auth.Post("/2fa/enable", middleware.Protected(), authHandler.Enable2FA)
+	auth.Post("/2fa/verify", middleware.Protected(), authHandler.Verify2FALogin)
 
 	// Example Protected Route
 	api.Get("/protected", middleware.Protected(), func(c *fiber.Ctx) error {

@@ -12,9 +12,15 @@ var (
 )
 
 type User struct {
-	ID        string
-	Phone     string
-	CreatedAt time.Time
+	ID                   string
+	Email                string
+	Phone                string
+	PasswordHash         string
+	IsTwoFactorEnabled   bool
+	TwoFactorSecret      string
+	TwoFactorBackupCodes []string
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
 }
 
 func NewUser(phone string) (*User, error) {

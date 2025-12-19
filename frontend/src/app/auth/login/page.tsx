@@ -19,9 +19,16 @@ const otpSchema = z.object({
   }),
 })
 
+const twoFactorSchema = z.object({
+  code: z.string().length(6, {
+    message: "Code must be 6 digits.",
+  }),
+})
+
 export default function LoginPage() {
-  const [step, setStep] = useState<"phone" | "otp">("phone")
+  const [step, setStep] = useState<"phone" | "otp" | "2fa">("phone")
   const [phone, setPhone] = useState("")
+  const [tempToken, setTempToken] = useState("")
 
   const phoneForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -32,6 +39,13 @@ export default function LoginPage() {
 
   const otpForm = useForm<z.infer<typeof otpSchema>>({
     resolver: zodResolver(otpSchema),
+    defaultValues: {
+      code: "",
+    },
+  })
+
+  const twoFactorForm = useForm<z.infer<typeof twoFactorSchema>>({
+    resolver: zodResolver(twoFactorSchema),
     defaultValues: {
       code: "",
     },
@@ -51,6 +65,14 @@ export default function LoginPage() {
   async function onOtpSubmit(values: z.infer<typeof otpSchema>) {
     try {
       const res = await axios.post("http://localhost:8080/api/auth/otp/verify", { phone, code: values.code })
+      
+      if (res.data["2fa_required"]) {
+        setTempToken(res.data.temp_token)
+        setStep("2fa")
+        toast.info("Please enter your 2FA code")
+        return
+      }
+
       localStorage.setItem("token", res.data.token)
       toast.success("Login successful")
       // Redirect to dashboard
@@ -59,21 +81,37 @@ export default function LoginPage() {
     }
   }
 
+  async function onTwoFactorSubmit(values: z.infer<typeof twoFactorSchema>) {
+    try {
+      const res = await axios.post("http://localhost:8080/api/auth/2fa/verify", 
+        { code: values.code },
+        { headers: { Authorization: `Bearer ${tempToken}` } }
+      )
+      localStorage.setItem("token", res.data.token)
+      toast.success("Login successful")
+      // Redirect to dashboard
+    } catch (error) {
+      toast.error("Invalid 2FA Code")
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-zinc-900">
       <div className="w-full max-w-md space-y-8 rounded-lg border bg-white p-6 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
         <div className="text-center">
           <h2 className="text-2xl font-bold tracking-tight">
-            {step === "phone" ? "Sign in with Phone" : "Enter OTP"}
+            {step === "phone" ? "Sign in with Phone" : step === "otp" ? "Enter OTP" : "Two-Factor Authentication"}
           </h2>
           <p className="text-sm text-muted-foreground">
             {step === "phone"
               ? "Enter your mobile number to receive a code"
-              : `Code sent to ${phone}`}
+              : step === "otp"
+              ? `Code sent to ${phone}`
+              : "Enter the code from your authenticator app"}
           </p>
         </div>
 
-        {step === "phone" ? (
+        {step === "phone" && (
           <form onSubmit={phoneForm.handleSubmit(onPhoneSubmit)} className="space-y-4">
             <div>
               <input
@@ -92,7 +130,9 @@ export default function LoginPage() {
               Send Code
             </button>
           </form>
-        ) : (
+        )}
+
+        {step === "otp" && (
           <form onSubmit={otpForm.handleSubmit(onOtpSubmit)} className="space-y-4">
             <div>
               <input
@@ -109,6 +149,27 @@ export default function LoginPage() {
               className="inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             >
               Verify & Login
+            </button>
+          </form>
+        )}
+
+        {step === "2fa" && (
+          <form onSubmit={twoFactorForm.handleSubmit(onTwoFactorSubmit)} className="space-y-4">
+            <div>
+              <input
+                {...twoFactorForm.register("code")}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                placeholder="123456"
+              />
+              {twoFactorForm.formState.errors.code && (
+                <p className="text-sm text-red-500 mt-1">{twoFactorForm.formState.errors.code.message}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="inline-flex h-10 w-full items-center justify-center whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground ring-offset-background transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+            >
+              Verify 2FA
             </button>
           </form>
         )}

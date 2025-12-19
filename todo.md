@@ -120,7 +120,7 @@
 [ ] Connect Grafana Loki (if using Grafana stack) to grep logs alongside metrics.
 
  Phase 6: Future Roadmap (Template Updates)
-[x] Real-time Features
+ [x] Real-time Features
 
 [x] Implement WebSocket (Fiber) for real-time notifications (e.g., Payment Success).
 

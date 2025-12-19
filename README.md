@@ -6,6 +6,7 @@ A production-ready, high-performance boilerplate designed for scalability, maint
 
 ### 🔐 Authentication & Security
 *   **OTP-based Authentication**: Secure login flow using SMS (Senator provider).
+*   **Two-Factor Authentication (2FA)**: TOTP support (Google Authenticator, Authy) with backup codes.
 *   **JWT Authorization**: Stateless authentication with access and refresh tokens.
 *   **RBAC Ready**: Structure in place for Role-Based Access Control.
 *   **Security Headers**: Helmet middleware, CORS configuration, and CSRF protection.
