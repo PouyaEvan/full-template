@@ -1,0 +1,89 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone Number",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "loading": "Loading...",
+    "success": "Success",
+    "error": "Error",
+    "settings": "Settings",
+    "dashboard": "Dashboard",
+    "profile": "Profile"
+  },
+  "auth": {
+    "title": "Login",
+    "subtitle": "Enter your credentials to access your account",
+    "otp": {
+      "title": "Enter OTP",
+      "description": "We sent a verification code to your phone",
+      "resend": "Resend code",
+      "sent": "OTP sent successfully"
+    },
+    "twoFactor": {
+      "title": "Two-Factor Authentication",
+      "setup": "Setup 2FA",
+      "enable": "Enable 2FA",
+      "verify": "Verify 2FA",
+      "enterCode": "Enter your authentication code",
+      "scanQR": "Scan this QR code with your authenticator app",
+      "backupCodes": "Backup Codes",
+      "backupCodesDescription": "Save these codes in a safe place. You can use them to access your account if you lose your phone."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "overview": "Overview",
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions"
+  },
+  "payments": {
+    "title": "Payments",
+    "amount": "Amount",
+    "description": "Description",
+    "status": "Status",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed",
+    "payNow": "Pay Now"
+  },
+  "files": {
+    "title": "Files",
+    "upload": "Upload",
+    "download": "Download",
+    "delete": "Delete",
+    "name": "Name",
+    "size": "Size",
+    "type": "Type",
+    "uploadedAt": "Uploaded At",
+    "dragDropHint": "Drag and drop files here or click to browse"
+  },
+  "errors": {
+    "invalidRequest": "Invalid request",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "notFound": "Resource not found",
+    "internal": "Internal server error",
+    "invalidCredentials": "Invalid credentials",
+    "otpExpired": "OTP has expired or not found",
+    "invalidOtp": "Invalid OTP code",
+    "userNotFound": "User not found",
+    "invalidToken": "Invalid or expired token"
+  },
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "phone": "Please enter a valid phone number",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters"
+  }
+}
