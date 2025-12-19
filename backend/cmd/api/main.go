@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gofiber/contrib/otelfiber"
+	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/csrf"
@@ -66,6 +67,8 @@ func main() {
 
 	// Handlers
 	authHandler := http.NewAuthHandler(smsAdapter, rdb)
+	wsHandler := http.NewWebSocketHandler()
+	go wsHandler.Run()
 
 	// 5. Initialize Fiber App
 	app := fiber.New(fiber.Config{
@@ -94,6 +97,23 @@ func main() {
 
 	api.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{"status": "ok"})
+	})
+
+	// WebSocket Route
+	app.Use("/ws", http.WebSocketMiddleware())
+	app.Get("/ws", websocket.New(wsHandler.HandleWebSocket))
+
+	// Test WebSocket Broadcast
+	api.Post("/broadcast", func(c *fiber.Ctx) error {
+		type Msg struct {
+			Message string `json:"message"`
+		}
+		var msg Msg
+		if err := c.BodyParser(&msg); err != nil {
+			return c.Status(400).SendString(err.Error())
+		}
+		wsHandler.BroadcastMessage(msg.Message)
+		return c.SendString("Message broadcasted")
 	})
 
 	// Auth Routes
