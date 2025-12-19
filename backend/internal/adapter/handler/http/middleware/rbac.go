@@ -1,8 +1,6 @@
 package middleware
 
 import (
-	"context"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/youruser/yourproject/internal/core/domain"
 	"github.com/youruser/yourproject/internal/core/ports"
@@ -28,7 +26,8 @@ func (m *RBACMiddleware) RequireRole(role string) fiber.Handler {
 			})
 		}
 
-		hasRole, err := m.rbacRepo.UserHasRole(context.Background(), userID, role)
+		ctx := c.Context()
+		hasRole, err := m.rbacRepo.UserHasRole(ctx, userID, role)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": "Failed to check user role",
@@ -37,7 +36,7 @@ func (m *RBACMiddleware) RequireRole(role string) fiber.Handler {
 
 		if !hasRole {
 			// Check if user is admin (admin has access to everything)
-			isAdmin, _ := m.rbacRepo.UserHasRole(context.Background(), userID, domain.RoleAdmin)
+			isAdmin, _ := m.rbacRepo.UserHasRole(ctx, userID, domain.RoleAdmin)
 			if !isAdmin {
 				return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 					"error": "Insufficient permissions",
@@ -59,7 +58,8 @@ func (m *RBACMiddleware) RequirePermission(permission string) fiber.Handler {
 			})
 		}
 
-		hasPermission, err := m.rbacRepo.UserHasPermission(context.Background(), userID, permission)
+		ctx := c.Context()
+		hasPermission, err := m.rbacRepo.UserHasPermission(ctx, userID, permission)
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": "Failed to check user permission",
@@ -86,8 +86,9 @@ func (m *RBACMiddleware) RequireAnyRole(roles ...string) fiber.Handler {
 			})
 		}
 
+		ctx := c.Context()
 		for _, role := range roles {
-			hasRole, err := m.rbacRepo.UserHasRole(context.Background(), userID, role)
+			hasRole, err := m.rbacRepo.UserHasRole(ctx, userID, role)
 			if err != nil {
 				continue
 			}
@@ -112,8 +113,9 @@ func (m *RBACMiddleware) RequireAnyPermission(permissions ...string) fiber.Handl
 			})
 		}
 
+		ctx := c.Context()
 		for _, permission := range permissions {
-			hasPerm, err := m.rbacRepo.UserHasPermission(context.Background(), userID, permission)
+			hasPerm, err := m.rbacRepo.UserHasPermission(ctx, userID, permission)
 			if err != nil {
 				continue
 			}
@@ -138,8 +140,9 @@ func (m *RBACMiddleware) RequireAllPermissions(permissions ...string) fiber.Hand
 			})
 		}
 
+		ctx := c.Context()
 		for _, permission := range permissions {
-			hasPerm, err := m.rbacRepo.UserHasPermission(context.Background(), userID, permission)
+			hasPerm, err := m.rbacRepo.UserHasPermission(ctx, userID, permission)
 			if err != nil || !hasPerm {
 				return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 					"error": "Insufficient permissions",

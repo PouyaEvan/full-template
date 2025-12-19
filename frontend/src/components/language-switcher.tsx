@@ -1,16 +1,19 @@
 'use client';
 
 import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { locales, type Locale } from '@/i18n';
 
 export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const setLocale = (locale: Locale) => {
     startTransition(() => {
-      // Set cookie and reload page
+      // Set cookie for server-side locale detection
       document.cookie = `locale=${locale}; path=/; max-age=31536000`;
-      window.location.reload();
+      // Use router.refresh() to re-render the page with new locale without full reload
+      router.refresh();
     });
   };
 
